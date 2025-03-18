@@ -22,7 +22,7 @@ func (db *Database) Connect() error {
 	return nil
 }
 
-func (db *Database) AddUser(u *models.User) error {
+func (db *Database) CreateUser(u *models.User) error {
 	result := db.db.Create(u)
 	if result.Error != nil {
 		return result.Error

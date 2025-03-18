@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -37,7 +36,10 @@ func main() {
 
 	e.Use(middleware.Logger())
 
-	e.GET("/", func(c echo.Context) error { return c.String(http.StatusOK, "all good") })
+	e.POST("/users/create", func(c echo.Context) error { return nil })
+	e.GET("/users/read", func(c echo.Context) error { return nil })
+	e.PATCH("/users/update", func(c echo.Context) error { return nil })
+	e.DELETE("/users/delete", func(c echo.Context) error { return nil })
 
 	e.StdLogger.Fatal(e.Start(":1816"))
 }
