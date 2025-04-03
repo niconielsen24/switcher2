@@ -29,16 +29,31 @@ func (db *Database) CreateUser(u *models.User) error {
 	}
 	return nil
 }
-func (db *Database) GetUser(email string) error {
-	result := db.db.Where("email = ?", email).Find(&models.User{})
+
+func (db *Database) GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	result := db.db.Where("email = ?", email).First(&user)
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
-	return nil
+	return &user, nil
 }
-func (db *Database) DeleteUser() error {
-	return nil
+
+func (db *Database) GetUserByID(id uint) (*models.User, error) {
+	var user models.User
+	result := db.db.First(&user, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
 }
-func (db *Database) UpdateUSer() error {
-	return nil
+
+func (db *Database) DeleteUser(id uint) error {
+	result := db.db.Delete(&models.User{}, id)
+	return result.Error
+}
+
+func (db *Database) UpdateUser(user *models.User) error {
+	result := db.db.Model(&models.User{}).Where("id = ?", user.ID).Updates(user)
+	return result.Error
 }
