@@ -12,7 +12,12 @@ dist
 dist-ssr
 *.local
 
+./server/tmp/*
+
 .env
+*.pem
+./server/*.pem
+./client/*.pem
 
 # Editor directories and files
 .vscode/*

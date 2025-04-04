@@ -50,6 +50,7 @@ func UserLoginGoogle(r repo.Repository) echo.HandlerFunc {
 			if err := setCookie(c, user); err != nil {
 				return c.JSON(http.StatusInternalServerError, echo.Map{"message": err.Error()})
 			}
+
 			return c.JSON(http.StatusOK, echo.Map{"message": "created account successfully"})
 		}
 
@@ -69,7 +70,12 @@ func UserLoginGoogle(r repo.Repository) echo.HandlerFunc {
 			return c.JSON(http.StatusInternalServerError, echo.Map{"message": err.Error()})
 		}
 
-		return c.JSON(http.StatusOK, echo.Map{"message": "login successful"})
+		response_user := &dto.CreateUserResponseDTO{
+			Username: user.Username,
+			Email:    *user.Email,
+		}
+
+		return c.JSON(http.StatusOK, echo.Map{"user": response_user})
 	}
 }
 
@@ -89,7 +95,7 @@ func validateGoogleToken(id_token string) (*idtoken.Payload, error) {
 }
 
 func setCookie(c echo.Context, user *models.User) error {
-	jwt, err := GenerateJWT(user.ID, user.Username)
+	jwt, err := GenerateJWT(user)
 	if err != nil {
 		return err
 	}

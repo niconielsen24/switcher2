@@ -9,19 +9,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var JWT_SECRET []byte
-
 var ErrJwtSecretNotFOund = errors.New("could not find jwt secret")
-
-func init() {
-	str := os.Getenv("JWT_SECRET")
-	JWT_SECRET = []byte(str)
-}
 
 func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		secret_str := os.Getenv("JWT_SECRET")
+		JWT_SECRET := []byte(secret_str)
 
-		cookie, err := c.Cookie("sessionToken")
+		cookie, err := c.Cookie("authorization")
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized: missing session token")
 		}
@@ -31,11 +26,11 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized: invalid session token")
+			return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 		}
 
 		claims := token.Claims.(jwt.MapClaims)
-		c.Set("userId", claims["userId"])
+		c.Set("userID", claims["userID"])
 		c.Set("username", claims["username"])
 
 		return next(c)

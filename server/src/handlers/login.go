@@ -39,7 +39,7 @@ func UserLogin(r repo.Repository) echo.HandlerFunc {
 			})
 		}
 
-		jwt, err := GenerateJWT(user.ID, user.Username)
+		jwt, err := GenerateJWT(user)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, echo.Map{
 				"error": err.Error(),
@@ -50,6 +50,11 @@ func UserLogin(r repo.Repository) echo.HandlerFunc {
 
 		c.SetCookie(cookie)
 
-		return c.JSON(http.StatusOK, echo.Map{"message": "login successful"})
+		response_user := &dto.CreateUserResponseDTO{
+			Username: user.Username,
+			Email:    *user.Email,
+		}
+
+		return c.JSON(http.StatusOK, echo.Map{"user": response_user})
 	}
 }

@@ -2,21 +2,62 @@ import { AnimatePresence, motion } from "motion/react";
 import LoginForm from "./components/LoginForm";
 import { CredentialResponse } from "@react-oauth/google";
 import { googleLogin, login, register } from "../../services/apiCalls";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { WaitingServerModal } from "./components/WaitServerModal";
 import RegisterForm from "./components/RegisterForm";
+import { useUserStore } from "../../store/store";
+import { useNavigate } from "react-router";
+
+type ApiResponse = { error?: string; username?: string; email?: string };
+async function auth(): Promise<ApiResponse> {
+  const response = await fetch("https://localhost:8080/auth/session", {
+    method: "GET",
+    credentials: "include",
+  });
+  return response.json();
+}
 
 export default function Landing() {
+  /* HOOKS */
   const [waitingServer, setWaiting] = useState<boolean>(false);
   const [currentForm, setCurrentForm] = useState<"login" | "register">("login");
+  const [loginSuccess, setLoginSuccess] = useState<boolean>(false);
+  const sessionRef = useRef<ApiResponse>(null);
+  const navigate = useNavigate();
 
+  /* STORE */
+  const { setUser } = useUserStore();
+
+  /* EFFECTS */
+  useEffect(() => {
+    if (loginSuccess) {
+      navigate("/home");
+    }
+  }, [loginSuccess, navigate]);
+
+  useEffect(() => {
+    if (sessionRef.current != null) return;
+
+    const authEffect = async () => {
+      const response = await auth();
+      if (response.username && response.email) {
+        setUser({ username: response.username, email: response.email });
+        setLoginSuccess(true);
+      }
+      sessionRef.current = response;
+    };
+    authEffect();
+  }, [sessionRef, setUser, setLoginSuccess]);
+
+  /* FUNCTION DEFINITIONS */
   const handleLoginSuccesGoogle = async (response: CredentialResponse) => {
     setWaiting(true);
     try {
       if (response.credential) {
         const serverResponse = await googleLogin(response.credential);
-        console.log(serverResponse);
+        setUser(serverResponse.user);
         setWaiting(false);
+        setLoginSuccess(true);
       } else {
         setWaiting(false);
       }
@@ -35,8 +76,9 @@ export default function Landing() {
     setWaiting(true);
     try {
       const response = await login(email, password);
-      console.log(response);
+      setUser(response.user);
       setWaiting(false);
+      setLoginSuccess(true);
     } catch (error) {
       console.error(error);
       setWaiting(false);
@@ -52,8 +94,9 @@ export default function Landing() {
     setWaiting(true);
     try {
       const response = await register(username, email, password);
-      console.log(response);
+      setUser(response.user);
       setWaiting(false);
+      setLoginSuccess(true);
     } catch (error) {
       console.error(error);
       setWaiting(false);
@@ -73,13 +116,13 @@ export default function Landing() {
         transition={{ duration: 1 }}
       >
         {/* TITLE CONTAINER */}
-        <div className="text-8xl font-extrabold text-amber-800 border-b-8 border-3 rounded-3xl p-5 mb-20 flex flex-row items-baseline">
+        <div className="text-8xl font-extrabold text-stone-800 bg-gradient-to-tr from-indigo-300 shadow-md shadow-stone-950 to-indigo-200 border-b-8 border-stone-700 border-3 rounded-3xl p-5 mb-20 flex flex-row items-baseline">
           <h1>SWITCHER</h1>
           <h1 className="text-9xl text-indigo-500 ml-3">2</h1>
         </div>
 
         {/* LOGIN AND REGISTER TABS*/}
-        <div className="relative flex w-full text-3xl font-bold text-amber-800">
+        <div className="relative flex w-full text-3xl font-bold text-stone-300">
           {["login", "register"].map((tab) => (
             <div
               key={tab}
@@ -90,7 +133,7 @@ export default function Landing() {
               {currentForm === tab && (
                 <motion.div
                   layoutId="underline"
-                  className="absolute pb-2 bottom-0 left-0 right-0 h-1 bg-indigo-500"
+                  className="absolute pb-2 bottom-0 left-0 right-0 h-1 bg-indigo-500 shadow-md shadow-stone-950"
                   transition={{ type: "tween", stiffness: 300, damping: 20 }}
                 />
               )}
