@@ -2,14 +2,11 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"os"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/niconielsen24/game/src/dto"
 	"github.com/niconielsen24/game/src/handlers"
 	"github.com/niconielsen24/game/src/middlewares"
 	"github.com/niconielsen24/game/src/repo"
@@ -36,6 +33,7 @@ func init() {
 func main() {
 	e := echo.New()
 
+	// Middleware config
 	e.Use(middlewares.CustomLoggerMiddleware(middlewares.LoggerConfig{
 		UseJSON:    false,
 		WithCaller: true,
@@ -61,5 +59,9 @@ func main() {
 	e.POST("/users/login", handlers.UserLogin(db))
 	e.POST("/users/google-login", handlers.UserLoginGoogle(db))
 
-	e.StdLogger.Fatal(e.StartTLS(":8080", "./localhost.pem", "./localhost-key.pem"))
+	// Server start
+	ssl_cert_path := os.Getenv("SSL_CERTIFICATE_PATH")
+	ssl_cert_key_path := os.Getenv("SSL_CERTIFICATE_KEY_PATH")
+
+	e.StdLogger.Fatal(e.StartTLS(":8080", ssl_cert_path, ssl_cert_key_path))
 }
