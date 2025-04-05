@@ -57,14 +57,16 @@ export async function register(
   return response.json();
 }
 
-export async function createGame() {
+export async function createGame(name: string) {
+  const payload = JSON.stringify({ name });
+
   const response = await fetch("https://localhost:8080/game/create", {
     method: "POST",
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({}),
+    body: payload,
   });
 
   if (!response.ok)
