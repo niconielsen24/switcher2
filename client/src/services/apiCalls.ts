@@ -24,7 +24,6 @@ export async function login(email: string, password: string) {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "https://localhost:8080",
     },
     body: JSON.stringify(payload),
   });

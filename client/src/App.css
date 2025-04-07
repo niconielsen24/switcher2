@@ -4,6 +4,29 @@
   text-align: center;
 }
 
+@keyframes underline-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.header-title-underline {
+  background: linear-gradient(
+    0.25turn,
+    oklch(74% 0.238 322.16),
+    oklch(91.7% 0.08 205.041)
+  );
+  background-size: 200% 200%;
+  background-repeat: repeat;
+  animation: underline-animation 6s linear infinite;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;

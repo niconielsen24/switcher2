@@ -9,18 +9,21 @@ import (
 
 func CreateGame(c echo.Context) error {
 	type creategamereq struct {
-		Name string `json:"name"`
+		Username   string `json:"username"`
+		LobbyName  string `json:"lobbyName"`
+		MaxPlayers uint   `json:"maxPlayers"`
 	}
 	req := &creategamereq{}
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{"error": err.Error()})
 	}
 
-	game := game.NewGameState(game.NewPlayer(req.Name))
+	game := game.NewGameState(game.NewPlayer(req.Username), req.LobbyName, uint8(req.MaxPlayers))
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"id":      game.ID,
-		"turn":    game.Turn.Name,
-		"players": game.Players[0].Name,
+		"id":        game.ID,
+		"lobbyName": game.GameName,
+		"turn":      game.Turn.ID,
+		"players":   game.Players[0].ID,
 	})
 }

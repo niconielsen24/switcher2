@@ -13,6 +13,7 @@ dist-ssr
 *.local
 
 ./server/tmp/*
+./server/build/*
 
 .env
 *.pem

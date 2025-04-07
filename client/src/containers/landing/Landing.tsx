@@ -7,8 +7,10 @@ import { WaitingServerModal } from "./components/WaitServerModal";
 import RegisterForm from "./components/RegisterForm";
 import { useUserStore } from "../../store/store";
 import { useNavigate } from "react-router";
+import Title from "../../components/Title";
+import { ApiResponse } from "../../types/types_landing";
+import LoginErrorModal from "./components/LoginErrorModal";
 
-type ApiResponse = { error?: string; username?: string; email?: string };
 async function auth(): Promise<ApiResponse> {
   const response = await fetch("https://localhost:8080/auth/session", {
     method: "GET",
@@ -17,11 +19,41 @@ async function auth(): Promise<ApiResponse> {
   return response.json();
 }
 
+function Tabs({
+  currentForm,
+  setCurrentForm,
+}: {
+  currentForm: "login" | "register";
+  setCurrentForm: (tab: "login" | "register") => void;
+}) {
+  return (
+    <div className="relative flex w-full h-1/6 items-center text-3xl font-bold text-slate-800">
+      {["login", "register"].map((tab) => (
+        <div
+          key={tab}
+          className="w-1/2 text-center cursor-pointer relative p-3"
+          onClick={() => setCurrentForm(tab as "login" | "register")}
+        >
+          {tab.toUpperCase()}
+          {currentForm === tab && (
+            <motion.div
+              layoutId="underline"
+              className="absolute pb-2 bottom-0 left-0 right-0 h-1 bg-slate-800"
+              transition={{ type: "tween", stiffness: 300, damping: 20 }}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Landing() {
   /* HOOKS */
   const [waitingServer, setWaiting] = useState<boolean>(false);
   const [currentForm, setCurrentForm] = useState<"login" | "register">("login");
   const [loginSuccess, setLoginSuccess] = useState<boolean>(false);
+  const [loginError, setLoginError] = useState<{ error: unknown } | null>(null);
   const sessionRef = useRef<ApiResponse>(null);
   const navigate = useNavigate();
 
@@ -63,6 +95,7 @@ export default function Landing() {
       }
     } catch (error) {
       console.error(error);
+      setLoginError({ error });
       setWaiting(false);
     }
   };
@@ -81,6 +114,7 @@ export default function Landing() {
       setLoginSuccess(true);
     } catch (error) {
       console.error(error);
+      setLoginError({ error });
       setWaiting(false);
     }
   };
@@ -99,6 +133,7 @@ export default function Landing() {
       setLoginSuccess(true);
     } catch (error) {
       console.error(error);
+      setLoginError({ error });
       setWaiting(false);
     }
   };
@@ -108,41 +143,27 @@ export default function Landing() {
       {/* MODAL POPS UP WHEN WAITING FOR SERVER */}
       <WaitingServerModal isLoading={waitingServer} />
 
+      {/* MODAL POPS UP WHEN THERE IS A LOGIN/REGISTER ERROR */}
+      <LoginErrorModal
+        loginError={loginError}
+        setLoginError={() => setLoginError(null)}
+      />
+
       {/* MAIN DIV CONTAINER */}
       <motion.div
-        className="flex flex-col items-center h-screen justify-center mt-30"
+        className="flex flex-col items-center h-screen justify-center"
         initial={{ opacity: 0, y: "100%", scale: 0 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1 }}
       >
         {/* TITLE CONTAINER */}
-        <div className="text-8xl font-extrabold text-stone-800 bg-gradient-to-tr from-indigo-300 shadow-md shadow-stone-950 to-indigo-200 border-b-8 border-stone-700 border-3 rounded-3xl p-5 mb-20 flex flex-row items-baseline">
-          <h1>SWITCHER</h1>
-          <h1 className="text-9xl text-indigo-500 ml-3">2</h1>
+        <div className="w-full h-1/6 flex items-center justify-center mt-20">
+          <Title />
         </div>
-
         {/* LOGIN AND REGISTER TABS*/}
-        <div className="relative flex w-full text-3xl font-bold text-stone-300">
-          {["login", "register"].map((tab) => (
-            <div
-              key={tab}
-              className="w-1/2 text-center cursor-pointer relative p-3"
-              onClick={() => setCurrentForm(tab as "login" | "register")}
-            >
-              {tab.toUpperCase()}
-              {currentForm === tab && (
-                <motion.div
-                  layoutId="underline"
-                  className="absolute pb-2 bottom-0 left-0 right-0 h-1 bg-indigo-500 shadow-md shadow-stone-950"
-                  transition={{ type: "tween", stiffness: 300, damping: 20 }}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-
+        <Tabs currentForm={currentForm} setCurrentForm={setCurrentForm} />
         {/* LOGIN AND REGISTER FORMS */}
-        <div className="w-ful h-full">
+        <div className="w-full h-2/3 flex flex-col justify-start">
           {currentForm === "login" && (
             <AnimatePresence>
               <motion.div

@@ -23,7 +23,7 @@ export function ButtonGreen({ text, onClick }: ButtonProps) {
     <>
       <div className="">
         <button
-          className="text-green-900 bg-lime-300 font-bold text-2xl rounded-lg border-3 pl-4 pr-4 pt-2 pb-2 m-4 hover:cursor-pointer transition-all shadow-sm hover:shadow-md active:shadow-none shadow-stone-700/70"
+          className="text-green-900 bg-lime-300 font-bold text-2xl rounded-lg pl-4 pr-4 pt-2 pb-2 m-4 hover:cursor-pointer transition-all shadow-sm hover:shadow-md active:shadow-none shadow-stone-700/70"
           onClick={onClick}
         >
           {text}
@@ -38,7 +38,7 @@ export function ButtonRed({ text, onClick }: ButtonProps) {
     <>
       <div className="">
         <button
-          className="text-red-900 bg-rose-300 font-bold text-2xl rounded-lg border-3 pl-4 pr-4 pt-2 pb-2 m-4 hover:cursor-pointer transition-all shadow-sm hover:shadow-md active:shadow-none shadow-stone-700/70"
+          className="text-red-900 bg-rose-300 font-bold text-2xl rounded-lg pl-4 pr-4 pt-2 pb-2 m-4 hover:cursor-pointer transition-all shadow-sm hover:shadow-md active:shadow-none shadow-stone-700/70"
           onClick={onClick}
         >
           {text}

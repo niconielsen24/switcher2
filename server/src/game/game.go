@@ -2,18 +2,28 @@ package game
 
 import "github.com/google/uuid"
 
-type GameState struct {
-	ID      string
-	Players []*player
-	Board   *board
-	Turn    *player
+type Game struct {
+	ID         string
+	GameName   string
+	MaxPlayers uint8
+	Waiting    bool
+	Active     bool
+	Finnished  bool
+	Players    []*Player
+	Board      *Board
+	Turn       *Player
 }
 
-func NewGameState(p *player) *GameState {
-	return &GameState{
-		ID:      uuid.NewString(),
-		Players: []*player{p},
-		Board:   nil,
-		Turn:    p,
+func NewGameState(p *Player, name string, max_players uint8) *Game {
+	return &Game{
+		ID:         uuid.NewString(),
+		GameName:   name,
+		MaxPlayers: max_players,
+		Waiting:    true,
+		Active:     false,
+		Finnished:  false,
+		Players:    []*Player{p},
+		Board:      NewBoard(),
+		Turn:       p,
 	}
 }

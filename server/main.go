@@ -33,6 +33,9 @@ func init() {
 func main() {
 	e := echo.New()
 
+	// Web Server
+	e.Static("/", "build")
+
 	// Middleware config
 	e.Use(middlewares.CustomLoggerMiddleware(middlewares.LoggerConfig{
 		UseJSON:    false,
@@ -40,7 +43,7 @@ func main() {
 	}))
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowHeaders:     []string{echo.HeaderAuthorization, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderOrigin},
-		AllowOrigins:     []string{"https://localhost:5173", "https://192.168.0.55:5173"},
+		AllowOrigins:     []string{"https://localhost:5173"},
 		AllowMethods:     []string{echo.GET, echo.POST, echo.PUT, echo.DELETE, echo.OPTIONS},
 		AllowCredentials: true,
 	}))
